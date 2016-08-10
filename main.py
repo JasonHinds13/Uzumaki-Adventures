@@ -165,8 +165,11 @@ bk2rect = bkg2.get_rect()
 #summoning pad
 summonpad = pygame.image.load('Data/TerrainData/summon2.png').convert_alpha()
 
-#This is for the starting music
+#This is for music
 sound = pygame.mixer.Sound('Data/Sounds/Opening.ogg')
+kunai_sound = pygame.mixer.Sound('Data/Sounds/kunai.ogg')
+fireball_sound = pygame.mixer.Sound('Data/Sounds/Fireball.ogg')
+shuriken_sound = pygame.mixer.Sound('Data/Sounds/shuriken.ogg')
 
 #Variables for the selection circle at the starting screen
 circlex = 140
@@ -307,6 +310,8 @@ while running == True:
                     bullet.rect.x = player.rect.x
                     bullet.rect.y = player.rect.y
 
+                    fireball_sound.play()
+
                     if up == True:
                         bullet.image = pygame.image.load('Data/Effects/fireballup.png').convert_alpha()
                         bullet.by = -5
@@ -334,6 +339,8 @@ while running == True:
 
                     kunai = kunai - 1
 
+                    kunai_sound.play()
+
                     if up == True:
                         bullet.image = pygame.image.load('Data/Effects/KunaiUp.png').convert_alpha()
                         bullet.by = -5
@@ -358,6 +365,8 @@ while running == True:
                     bullet.rect.y = player.rect.y
 
                     shuriken = shuriken - 1
+
+                    shuriken_sound.play()
 
                     if up == True:
                         bullet.image = pygame.image.load('Data/Effects/shuriken.png').convert_alpha()
