@@ -1,6 +1,10 @@
 import pygame, sys, random, time
 from pygame.locals import *
 
+#TODO:
+#Let Enemies drop items when they die
+#Let It restart when hero dies
+
 pygame.init()
 
 clock = pygame.time.Clock() #clock
@@ -99,6 +103,8 @@ NPCmov = ['MoveUp','MoveDown','MoveLeft','MoveRight', 'Stand']
 attack = ['fireball', 'kunai', 'shuriken']
 #Initialize as fireball
 attack = 'fireball'
+
+dead = False
 
 kunai = 30 #Amount of Kunai character has
 shuriken = 30 #Amount of shuriken character has
@@ -301,7 +307,7 @@ while running == True:
             if event.key == K_ESCAPE:
                 sys.exit(1)
 
-            if event.key == ord('f') or event.key == K_SPACE:
+            if (event.key == ord('f') or event.key == K_SPACE) and not dead:
 
                 if attack == 'fireball' and power > 0:
 
@@ -395,16 +401,16 @@ while running == True:
             if event.key == ord('3'):
                 attack = 'shuriken'
 
-            if event.key == ord('g'):
-                bad = Enemy()
+            #if event.key == ord('g'):
+                #bad = Enemy()
 
-                bad.rect.x = 270 #random.randrange(0, 500)
-                bad.rect.y = 70 #random.randrange(100, 300)
+                #bad.rect.x = 270 #random.randrange(0, 500)
+                #bad.rect.y = 70 #random.randrange(100, 300)
 
-                enemies.add(bad)
-                AllSprites.add(bad)
+                #enemies.add(bad)
+                #AllSprites.add(bad)
 
-            if event.key == K_DOWN:
+            if event.key == K_DOWN and not dead:
                 down = True
                 up = False
                 right = False
@@ -412,7 +418,7 @@ while running == True:
                 player.image = pygame.image.load('Data/NarutoSprites/narutoM.png').convert_alpha()
                 ys = 3
 
-            if event.key == K_UP:
+            if event.key == K_UP and not dead:
                 up = True
                 down = False
                 right = False
@@ -420,7 +426,7 @@ while running == True:
                 player.image = pygame.image.load('Data/NarutoSprites/narutobackM.png').convert_alpha()
                 ys = -3
 
-            if event.key == K_LEFT:
+            if event.key == K_LEFT and not dead:
                 left = True
                 right = False
                 up = False
@@ -428,7 +434,7 @@ while running == True:
                 player.image = pygame.image.load('Data/NarutoSprites/narutoleftM.png').convert_alpha()
                 xs = -3
 
-            if event.key == K_RIGHT:
+            if event.key == K_RIGHT and not dead:
                 right = True
                 left = False
                 down = False
@@ -495,7 +501,7 @@ while running == True:
         if pygame.sprite.spritecollide(player, enemies, False):
             vital -= 10
 
-        if bad.move == 'MoveUp':
+        if bad.move == 'MoveUp' and not dead:
             if bad.rect.y > random.randint(10, 200):
                 bad.image = pygame.image.load('Data/NarutoSprites/gaarabackM.png').convert_alpha()
                 bad.xspeed = 0
@@ -503,7 +509,7 @@ while running == True:
             else:
                 bad.move = random.choice(NPCmov)
 
-        if bad.move == 'MoveDown':
+        if bad.move == 'MoveDown' and not dead:
             if bad.rect.y < random.randint(200, 390):
                 bad.image = pygame.image.load('Data/NarutoSprites/gaaraM.png').convert_alpha()
                 bad.xspeed = 0
@@ -511,7 +517,7 @@ while running == True:
             else:
                 bad.move = random.choice(NPCmov)
 
-        if bad.move == 'MoveLeft':
+        if bad.move == 'MoveLeft' and not dead:
             if bad.rect.x > random.randint(10, 300):
                 bad.image = pygame.image.load('Data/NarutoSprites/gaaraleftM.png').convert_alpha()
                 bad.xspeed = random.randrange(-3, -2)
@@ -519,7 +525,7 @@ while running == True:
             else:
                 bad.move = random.choice(NPCmov)
 
-        if bad.move == 'MoveRight':
+        if bad.move == 'MoveRight' and not dead:
             if bad.rect.x < random.randint(300, 590):
                 bad.image = pygame.image.load('Data/NarutoSprites/gaararightM.png').convert_alpha()
                 bad.xspeed = random.randrange(2, 3)
@@ -527,7 +533,7 @@ while running == True:
             else:
                 bad.move = random.choice(NPCmov)
 
-        if bad.move == 'Stand':
+        if bad.move == 'Stand' and not dead:
             bad.image = pygame.image.load('Data/NarutoSprites/gaaraS.png').convert_alpha()
             bad.xspeed = 0
             bad.yspeed = 0
@@ -542,12 +548,20 @@ while running == True:
 
     second += 1
 
-    if second >= 100:
+    if second >= 100 and not dead:
         if vital < 150:
             vital += 7
         if power < 150:
             power += 5
         second = 0
+
+        bad = Enemy()
+
+        bad.rect.x = 270
+        bad.rect.y = 70
+
+        enemies.add(bad)
+        AllSprites.add(bad)
 
     #This manages both player and enemy health
 
@@ -557,8 +571,9 @@ while running == True:
     if vital > 50:
         color = GREEN
 
-    if vital < 0:
+    if vital <= 0:
         vital = 0
+        dead = True
 
     if vital > 150:
         vital = 150
@@ -595,7 +610,15 @@ while running == True:
     if attack == 'shuriken':
         pygame.draw.rect(screen,RED, (558, 0, 42, 30), 3)
 
-    screen.blit(font.render(str("Target Practice - Press To 'G' Summon Enemies"), True,(255,255,255)), (10,370))
+    status = ""
+
+    if not dead:
+    	status = "Enemies Are Invading The Village! Get Rid Of Em!"
+    else:
+    	status = "You Ran Out Of Health. Better Luck Next Time..."
+
+    #screen.blit(font.render(str("Target Practice - Press To 'G' Summon Enemies"), True,(255,255,255)), (10,370))
+    screen.blit(font.render(str(status), True,(255,255,255)), (10,370))
 
     pygame.display.flip()
 
